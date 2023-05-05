@@ -11,7 +11,9 @@ const authorize = require('../middleware/authorization');
 // get all posts
 router.get('/',authorize(['admin', 'user']) ,async (req, res, next) => {
     try {
-        const posts = await Post.find().populate('user', 'name');
+        const posts = await Post.find().populate('user', 'name').populate(
+            'comments'
+        );
         res.json(posts);
     } catch (error) {
         next(error);
@@ -82,6 +84,8 @@ router.post('/like/:id',authorize(['admin', 'user']), async (req, res, next) => 
 // comment on post
 router.post('/comment/:id',authorize(['admin', 'user']), async (req, res, next) => {
 
+    req.body.user = req.user._id
+
     const { error } = validateComment(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
@@ -96,7 +100,7 @@ router.post('/comment/:id',authorize(['admin', 'user']), async (req, res, next) 
 
 
     const comment = new Comment({
-        comment: req.body.description,
+        comment: req.body.comment,
         user: req.user._id,
     });
 

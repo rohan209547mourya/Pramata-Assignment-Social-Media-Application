@@ -53,6 +53,9 @@ router.post('/register', async (req, res, next) => {
 // Login user route
 router.post('/login', async (req, res, next) => {
 
+
+    console.log(req);
+
     const user = await User.findOne({ email: req.body.email });
 
     if (!user) {
